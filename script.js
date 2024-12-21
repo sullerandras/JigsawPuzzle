@@ -68,8 +68,8 @@ function initializePuzzle() {
     // Slice the image into pieces
     const rows = 4; // Define rows and cols dynamically later
     const cols = 4;
-    const pieceWidth = scaledWidth / cols;
-    const pieceHeight = scaledHeight / rows;
+    const pieceWidth = Math.floor(scaledWidth / cols);
+    const pieceHeight = Math.floor(scaledHeight / rows);
 
     for (let row = 0; row < rows; row++) {
         for (let col = 0; col < cols; col++) {
@@ -88,8 +88,10 @@ function initializePuzzle() {
 
             pieceCanvas.classList.add('puzzle-piece');
             pieceCanvas.style.position = 'absolute';
-            pieceCanvas.style.left = `${Math.random() * 80}%`;
-            pieceCanvas.style.top = `${Math.random() * 80}%`;
+            // pieceCanvas.style.left = `${Math.random() * 80}%`;
+            // pieceCanvas.style.top = `${Math.random() * 80}%`;
+            pieceCanvas.style.left = `${col * pieceWidth}px`;
+            pieceCanvas.style.top = `${row * pieceHeight}px`;
             pieceCanvas.setAttribute('draggable', false);
 
             // Add event listeners
