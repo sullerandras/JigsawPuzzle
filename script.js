@@ -109,8 +109,7 @@ function initializePuzzle() {
                     break
                 }
             }
-            pieceCanvas.style.left = `${randomX}px`;
-            pieceCanvas.style.top = `${randomY}px`;
+            movePiece(pieceCanvas, randomX, randomY);
             // pieceCanvas.style.left = `${col * pieceWidth}px`;
             // pieceCanvas.style.top = `${row * pieceHeight}px`;
             pieceCanvas.setAttribute('draggable', false);
@@ -161,8 +160,7 @@ function addDragAndDropListeners(piece) {
 
         // Update piece position
         piece.style.position = 'absolute';
-        piece.style.left = `${x/scaleFactor}px`;
-        piece.style.top = `${y/scaleFactor}px`;
+        movePiece(piece, x/scaleFactor, y/scaleFactor);
     });
 
     // --- Mouse Up: Stop Dragging ---
@@ -193,8 +191,7 @@ function checkSnap(piece) {
 
     // console.log("checkSnap", piece.col, piece.row, x, y, expectedX, expectedY, distanceX, distanceY);
     if (distanceX < pieceWidth * 0.15 && distanceY < pieceHeight * 0.15) {
-        piece.style.left = `${expectedX}px`;
-        piece.style.top = `${expectedY}px`;
+        movePiece(piece, expectedX, expectedY);
         console.log("snapped");
         piece.allowDragging = false;
         piece.classList.add('unmovable');
@@ -219,13 +216,11 @@ function checkSnap(piece) {
             console.log('horizontally adjacent', piece.col, other.col, piece.row, other.row);
             if (x < otherX) {
                 if (piece.col == other.col - 1 && piece.row == other.row) {
-                    other.style.left = `${x + pieceWidth}px`;
-                    other.style.top = `${y}px`;
+                    movePiece(other, x + pieceWidth, y);
                 }
              } else {
                 if (piece.col - 1 == other.col && piece.row == other.row) {
-                    other.style.left = `${x - pieceWidth}px`;
-                    other.style.top = `${y}px`;
+                    movePiece(other, x - pieceWidth, y);
                 }
             }
         }
@@ -233,15 +228,18 @@ function checkSnap(piece) {
             console.log('vertically adjacent', piece.col, other.col, piece.row, other.row);
             if (y < otherY) {
                 if (piece.row == other.row - 1 && piece.col == other.col) {
-                    other.style.left = `${x}px`;
-                    other.style.top = `${y + pieceHeight}px`;
+                    movePiece(other, x, y + pieceHeight);
                 }
             } else {    
                 if (piece.row - 1 == other.row && piece.col == other.col) {
-                    other.style.left = `${x}px`;
-                    other.style.top = `${y - pieceHeight}px`;
+                    movePiece(other, x, y - pieceHeight);
                 }
             }
         }
     }
+}
+
+function movePiece(piece, x, y) {
+    piece.style.left = `${x}px`;
+    piece.style.top = `${y}px`;
 }
