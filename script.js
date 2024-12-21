@@ -93,13 +93,16 @@ function addDragAndDropListeners(piece) {
 
     function drag(e) {
         if (e.clientX === 0 && e.clientY === 0) return; // Ignore invalid drag events
-        console.log('drag', e.clientX, e.clientY, e.offsetX, e.offsetY)
-        const x = e.clientX - offsetX;
-        const y = e.clientY - offsetY;
+
+        const containerRect = document.getElementById('puzzle-container').getBoundingClientRect();
+    
+        const x = e.clientX - containerRect.left - offsetX;
+        const y = e.clientY - containerRect.top - offsetY;
+    
         e.target.style.position = 'absolute';
         e.target.style.left = `${x}px`;
         e.target.style.top = `${y}px`;
-    }
+    }    
 
     function dragEnd(e) {
         console.log('drag end', e.clientX, e.clientY, e.offsetX, e.offsetY)
