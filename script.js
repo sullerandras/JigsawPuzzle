@@ -93,6 +93,11 @@ function initializePuzzle() {
                 0, 0,
                 pieceWidth, pieceHeight
             );
+            pieceCtx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+            pieceCtx.fillRect(0, 0, pieceWidth, 1);
+            pieceCtx.fillRect(0, 1, 1, pieceHeight);
+            pieceCtx.fillRect(pieceWidth-1, 1, 1, pieceHeight);
+            pieceCtx.fillRect(1, pieceHeight-1, pieceWidth-2, 1);
 
             pieceCanvas.classList.add('puzzle-piece');
             pieceCanvas.style.position = 'absolute';
