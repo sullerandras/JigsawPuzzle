@@ -53,8 +53,11 @@ function initializePuzzle() {
     const heightScale = boardHeight / imageHeight;
     const fitScale = Math.min(widthScale, heightScale);
 
-    const scaledWidth = imageWidth * fitScale;
-    const scaledHeight = imageHeight * fitScale;
+    const scaledWidth = Math.floor(imageWidth * fitScale);
+    const scaledHeight = Math.floor(imageHeight * fitScale);
+
+    puzzleBoard.style.width = scaledWidth+'px';
+    puzzleBoard.style.height = scaledHeight+'px';
 
     console.log("image size: ", image.width, image.height);
     console.log("puzzle board size: ", puzzleBoard.width, puzzleBoard.height);
