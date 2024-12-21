@@ -12,6 +12,7 @@ let image = new Image();
 let pieces = [];
 let rotationEnabled = false;
 let scaleFactor = 0.7;
+let pieceWidth, pieceHeight;
 
 // --- Load Image and Slice ---
 loadImageButton.addEventListener('click', () => {
@@ -72,12 +73,15 @@ function initializePuzzle() {
     // Slice the image into pieces
     const rows = 4; // Define rows and cols dynamically later
     const cols = 4;
-    const pieceWidth = Math.floor(scaledWidth / cols);
-    const pieceHeight = Math.floor(scaledHeight / rows);
+    pieceWidth = Math.floor(scaledWidth / cols);
+    pieceHeight = Math.floor(scaledHeight / rows);
 
     for (let row = 0; row < rows; row++) {
         for (let col = 0; col < cols; col++) {
             const pieceCanvas = document.createElement('canvas');
+            pieceCanvas.row = row;
+            pieceCanvas.col = col;
+            pieceCanvas.allowDragging = true;
             pieceCanvas.width = pieceWidth;
             pieceCanvas.height = pieceHeight;
 
@@ -123,7 +127,9 @@ function addDragAndDropListeners(piece) {
 
     // --- Mouse Down: Start Dragging ---
     piece.addEventListener('mousedown', (e) => {
-        // console.log("mousedown", e.clientX, e.clientY);
+        if (!piece.allowDragging) return;
+
+        // console.log("mousedown", e.target.col, e.target.row);
         isDragging = true;
         piece.classList.add('dragging');
         piecesContainer.appendChild(piece); // Bring to front
@@ -159,6 +165,7 @@ function addDragAndDropListeners(piece) {
         if (isDragging) {
             isDragging = false;
             piece.classList.remove('dragging');
+            checkSnap(e.target);
         }
     });
 }
@@ -169,6 +176,22 @@ enableRotationCheckbox.addEventListener('change', (e) => {
 });
 
 // --- Snapping Logic ---
-function checkSnap() {
-    // Implement snapping detection and sound effect logic
+function checkSnap(piece) {
+    const x = parseInt(piece.style.left);
+    const y = parseInt(piece.style.top);
+
+    const expectedX = piece.col * pieceWidth;
+    const expectedY = piece.row * pieceHeight;
+
+    const distanceX = Math.abs(x - expectedX);
+    const distanceY = Math.abs(y - expectedY);
+
+    // console.log("checkSnap", piece.col, piece.row, x, y, expectedX, expectedY, distanceX, distanceY);
+    if (distanceX < pieceWidth * 0.15 && distanceY < pieceHeight * 0.15) {
+        piece.style.left = `${expectedX}px`;
+        piece.style.top = `${expectedY}px`;
+        console.log("snapped");
+        piece.allowDragging = false;
+        piece.classList.add('unmovable');
+    }
 }

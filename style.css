@@ -67,6 +67,10 @@ button, label {
     z-index: 1000; /* Bring the piece to the front */
 }
 
+.puzzle-piece.unmovable {
+    cursor: default; /* Default cursor */
+}
+
 /* Scrollable Bar for Mobile */
 #mobile-scroll-bar {
     display: none;
