@@ -92,10 +92,18 @@ function initializePuzzle() {
 
             pieceCanvas.classList.add('puzzle-piece');
             pieceCanvas.style.position = 'absolute';
-            // pieceCanvas.style.left = `${Math.random() * 80}%`;
-            // pieceCanvas.style.top = `${Math.random() * 80}%`;
-            pieceCanvas.style.left = `${col * pieceWidth}px`;
-            pieceCanvas.style.top = `${row * pieceHeight}px`;
+            let randomX, randomY;
+            while (true) { 
+                randomX = Math.random() * (scaledWidth / scaleFactor - pieceWidth);
+                randomY = Math.random() * (scaledHeight / scaleFactor - pieceHeight);
+                if (randomX > scaledWidth || randomY > scaledHeight) {
+                    break
+                }
+            }
+            pieceCanvas.style.left = `${randomX}px`;
+            pieceCanvas.style.top = `${randomY}px`;
+            // pieceCanvas.style.left = `${col * pieceWidth}px`;
+            // pieceCanvas.style.top = `${row * pieceHeight}px`;
             pieceCanvas.setAttribute('draggable', false);
 
             // Add event listeners
