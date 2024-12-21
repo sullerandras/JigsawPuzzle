@@ -111,6 +111,7 @@ function addDragAndDropListeners(piece) {
     piece.addEventListener('mousedown', (e) => {
         isDragging = true;
         piece.classList.add('dragging');
+        piecesContainer.appendChild(piece); // Bring to front
 
         // Get starting position
         startX = e.clientX;
