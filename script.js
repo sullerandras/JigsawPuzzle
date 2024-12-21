@@ -10,6 +10,11 @@ const zoomOutButton = document.getElementById('zoom-out');
 const ctx = puzzleBoard.getContext('2d');
 let image = new Image();
 let pieces = [];
+// Groups is used to group pieces that are connected.
+// Each piece has a `group` attribute which is the key in this obejct.
+// The value is an array of pieces that are connected and should be moved together.
+let groups = {};
+let nextGroupID = 1;
 let rotationEnabled = false;
 let scaleFactor = 0.7;
 let pieceWidth, pieceHeight;
@@ -84,6 +89,9 @@ function initializePuzzle() {
             pieceCanvas.allowDragging = true;
             pieceCanvas.width = pieceWidth;
             pieceCanvas.height = pieceHeight;
+            pieceCanvas.group = 0;
+            pieceCanvas.x = 0;
+            pieceCanvas.y = 0;
 
             const pieceCtx = pieceCanvas.getContext('2d');
             pieceCtx.drawImage(
@@ -195,13 +203,19 @@ function checkSnap(piece) {
         console.log("snapped");
         piece.allowDragging = false;
         piece.classList.add('unmovable');
+        if (piece.group) {
+            for (let p of groups[piece.group]) {
+                p.allowDragging = false;
+                p.classList.add('unmovable');
+            }
+        }
         
         return;
     }
 
     // check if piece is near a matching piece
     for (let other of pieces) {
-        if (other === piece || !other.allowDragging) continue;
+        if (other === piece || !other.allowDragging || (piece.group > 0 && piece.group === other.group)) continue;
 
         const otherX = parseFloat(other.style.left);
         const otherY = parseFloat(other.style.top);
@@ -213,33 +227,79 @@ function checkSnap(piece) {
         const isVerticallyAdjacent = distanceY > 0.85 * pieceHeight && distanceY < 1.15 * pieceHeight && distanceX < 0.15 * pieceWidth;
         // move the `other` piece to be aligned with the current `piece` if adjacent
         if (isHorizontallyAdjacent) {
-            console.log('horizontally adjacent', piece.col, other.col, piece.row, other.row);
+            console.log('horizontally adjacent', piece.group, other.group);
             if (x < otherX) {
                 if (piece.col == other.col - 1 && piece.row == other.row) {
                     movePiece(other, x + pieceWidth, y);
+                    groupPieces(piece, other);
                 }
              } else {
                 if (piece.col - 1 == other.col && piece.row == other.row) {
                     movePiece(other, x - pieceWidth, y);
+                    groupPieces(piece, other);
                 }
             }
         }
         if (isVerticallyAdjacent) {
-            console.log('vertically adjacent', piece.col, other.col, piece.row, other.row);
+            console.log('vertically adjacent', piece.group, other.group);
             if (y < otherY) {
                 if (piece.row == other.row - 1 && piece.col == other.col) {
                     movePiece(other, x, y + pieceHeight);
+                    groupPieces(piece, other);
                 }
             } else {    
                 if (piece.row - 1 == other.row && piece.col == other.col) {
                     movePiece(other, x, y - pieceHeight);
+                    groupPieces(piece, other);
                 }
             }
         }
     }
 }
 
+function groupPieces(piece1, piece2) {
+    if (piece1.group && piece2.group && piece1.group != piece2.group) { // Merge the two groups
+        const group1 = groups[piece1.group]; 
+        const group2 = groups[piece2.group];
+        for (let piece of group2) {
+            piece.group = piece1.group;
+            if (!group1.includes(piece)) {
+                group1.push(piece);
+            }
+        }
+        delete groups[piece2.group];
+    } else if (piece1.group) { // Add piece2 to group of piece1
+        piece2.group = piece1.group;
+        if (!groups[piece1.group].includes(piece2)) {
+            groups[piece1.group].push(piece2);
+        }
+    } else if (piece2.group) { // Add piece1 to group of piece2
+        piece1.group = piece2.group;
+        if (!groups[piece2.group].includes(piece1)) {
+            groups[piece2.group].push(piece1);
+        }
+    } else { // Create a new group with the two pieces
+        piece1.group = piece2.group = nextGroupID;
+        groups[nextGroupID] = [piece1, piece2];
+        nextGroupID++;
+    }
+}
+
 function movePiece(piece, x, y) {
-    piece.style.left = `${x}px`;
-    piece.style.top = `${y}px`;
+    let dx = x - piece.x;
+    let dy = y - piece.y;
+    if (piece.group) {
+        for (let p of groups[piece.group]) {
+            p.style.left = `${p.x + dx}px`;
+            p.style.top = `${p.y + dy}px`;
+            p.x += dx;
+            p.y += dy;
+        }
+    } else {
+        piece.style.left = `${x}px`;
+        piece.style.top = `${y}px`;
+        piece.x = x;
+        piece.y = y;
+    }
+    // console.log('movePiece', piece.col, piece.row, "to", x, y, "but got", piece.style.left, piece.style.top, "group", piece.group);
 }
