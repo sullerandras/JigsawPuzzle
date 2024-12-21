@@ -214,17 +214,18 @@ function checkSnap(piece) {
 
         const isHorizontallyAdjacent = distanceX > 0.85 * pieceWidth && distanceX < 1.15 * pieceWidth && distanceY < 0.15 * pieceHeight;
         const isVerticallyAdjacent = distanceY > 0.85 * pieceHeight && distanceY < 1.15 * pieceHeight && distanceX < 0.15 * pieceWidth;
+        // move the `other` piece to be aligned with the current `piece` if adjacent
         if (isHorizontallyAdjacent) {
             console.log('horizontally adjacent', piece.col, other.col, piece.row, other.row);
             if (x < otherX) {
                 if (piece.col == other.col - 1 && piece.row == other.row) {
-                    piece.style.left = `${otherX - pieceWidth}px`;
-                    piece.style.top = `${otherY}px`;
+                    other.style.left = `${x + pieceWidth}px`;
+                    other.style.top = `${y}px`;
                 }
              } else {
                 if (piece.col - 1 == other.col && piece.row == other.row) {
-                    piece.style.left = `${otherX + pieceWidth}px`;
-                    piece.style.top = `${otherY}px`;
+                    other.style.left = `${x - pieceWidth}px`;
+                    other.style.top = `${y}px`;
                 }
             }
         }
@@ -232,13 +233,13 @@ function checkSnap(piece) {
             console.log('vertically adjacent', piece.col, other.col, piece.row, other.row);
             if (y < otherY) {
                 if (piece.row == other.row - 1 && piece.col == other.col) {
-                    piece.style.left = `${otherX}px`;
-                    piece.style.top = `${otherY - pieceHeight}px`;
+                    other.style.left = `${x}px`;
+                    other.style.top = `${y + pieceHeight}px`;
                 }
             } else {    
                 if (piece.row - 1 == other.row && piece.col == other.col) {
-                    piece.style.left = `${otherX}px`;
-                    piece.style.top = `${otherY + pieceHeight}px`;
+                    other.style.left = `${x}px`;
+                    other.style.top = `${y - pieceHeight}px`;
                 }
             }
         }
