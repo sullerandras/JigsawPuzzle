@@ -20,13 +20,18 @@ loadImageButton.addEventListener('click', () => {
 
 zoomInButton.addEventListener('click', () => {
     scaleFactor *= 1.1;
-    initializePuzzle();
+    applyZoom();
 });
 
 zoomOutButton.addEventListener('click', () => {
     scaleFactor /= 1.1;
-    initializePuzzle();
+    applyZoom();
 });
+
+function applyZoom() {
+    puzzleContainer.style.transform = `scale(${scaleFactor})`;
+    puzzleContainer.style.transformOrigin = '0 0'; // Ensure scaling from top-left corner
+}
 
 function loadPuzzleImage(src) {
     image.src = src;
@@ -46,7 +51,7 @@ function initializePuzzle() {
     // Calculate scaling factor to fit the image within the puzzleBoard
     const widthScale = boardWidth / imageWidth;
     const heightScale = boardHeight / imageHeight;
-    const fitScale = Math.min(widthScale, heightScale) * scaleFactor;
+    const fitScale = Math.min(widthScale, heightScale);
 
     const scaledWidth = imageWidth * fitScale;
     const scaledHeight = imageHeight * fitScale;
