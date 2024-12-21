@@ -182,8 +182,8 @@ enableRotationCheckbox.addEventListener('change', (e) => {
 
 // --- Snapping Logic ---
 function checkSnap(piece) {
-    const x = parseInt(piece.style.left);
-    const y = parseInt(piece.style.top);
+    const x = parseFloat(piece.style.left);
+    const y = parseFloat(piece.style.top);
 
     const expectedX = piece.col * pieceWidth;
     const expectedY = piece.row * pieceHeight;
@@ -198,5 +198,49 @@ function checkSnap(piece) {
         console.log("snapped");
         piece.allowDragging = false;
         piece.classList.add('unmovable');
+        
+        return;
+    }
+
+    // check if piece is near a matching piece
+    for (let other of pieces) {
+        if (other === piece || !other.allowDragging) continue;
+
+        const otherX = parseFloat(other.style.left);
+        const otherY = parseFloat(other.style.top);
+
+        const distanceX = Math.abs(x - otherX);
+        const distanceY = Math.abs(y - otherY);
+
+        const isHorizontallyAdjacent = distanceX > 0.85 * pieceWidth && distanceX < 1.15 * pieceWidth && distanceY < 0.15 * pieceHeight;
+        const isVerticallyAdjacent = distanceY > 0.85 * pieceHeight && distanceY < 1.15 * pieceHeight && distanceX < 0.15 * pieceWidth;
+        if (isHorizontallyAdjacent) {
+            console.log('horizontally adjacent', piece.col, other.col, piece.row, other.row);
+            if (x < otherX) {
+                if (piece.col == other.col - 1 && piece.row == other.row) {
+                    piece.style.left = `${otherX - pieceWidth}px`;
+                    piece.style.top = `${otherY}px`;
+                }
+             } else {
+                if (piece.col - 1 == other.col && piece.row == other.row) {
+                    piece.style.left = `${otherX + pieceWidth}px`;
+                    piece.style.top = `${otherY}px`;
+                }
+            }
+        }
+        if (isVerticallyAdjacent) {
+            console.log('vertically adjacent', piece.col, other.col, piece.row, other.row);
+            if (y < otherY) {
+                if (piece.row == other.row - 1 && piece.col == other.col) {
+                    piece.style.left = `${otherX}px`;
+                    piece.style.top = `${otherY - pieceHeight}px`;
+                }
+            } else {    
+                if (piece.row - 1 == other.row && piece.col == other.col) {
+                    piece.style.left = `${otherX}px`;
+                    piece.style.top = `${otherY + pieceHeight}px`;
+                }
+            }
+        }
     }
 }
