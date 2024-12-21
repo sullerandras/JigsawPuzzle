@@ -74,21 +74,35 @@ function initializePuzzle() {
 }
 
 function addDragAndDropListeners(piece) {
-    piece.onmouseenter = function(e){
-        piece.style = 'border: 1px solid black'
-    }
-    piece.onmouseleave = function(e){
-        piece.style = 'border: 0px solid black'
-    }
+    console.log("adding drag and drop listeners")
     piece.addEventListener('dragstart', dragStart);
     piece.addEventListener('dragend', dragEnd);
+    piece.addEventListener('drag', drag);
+
+    let dragStartX, dragStartY, offsetX, offsetY;
 
     function dragStart(e) {
+        console.log('drag start', e.clientX, e.clientY, e.offsetX, e.offsetY)
+        dragStartX = e.clientX;
+        dragStartY = e.clientY;
+        offsetX = e.offsetX;
+        offsetY = e.offsetY;
         e.dataTransfer.setData('text/plain', 'dragging');
         e.target.classList.add('dragging');
     }
 
+    function drag(e) {
+        if (e.clientX === 0 && e.clientY === 0) return; // Ignore invalid drag events
+        console.log('drag', e.clientX, e.clientY, e.offsetX, e.offsetY)
+        const x = e.clientX - offsetX;
+        const y = e.clientY - offsetY;
+        e.target.style.position = 'absolute';
+        e.target.style.left = `${x}px`;
+        e.target.style.top = `${y}px`;
+    }
+
     function dragEnd(e) {
+        console.log('drag end', e.clientX, e.clientY, e.offsetX, e.offsetY)
         e.target.classList.remove('dragging');
         // Snapping logic to be added here
     }
