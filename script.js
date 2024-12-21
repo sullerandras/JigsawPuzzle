@@ -11,11 +11,12 @@ const ctx = puzzleBoard.getContext('2d');
 let image = new Image();
 let pieces = [];
 let rotationEnabled = false;
-let scaleFactor = 1;
+let scaleFactor = 0.7;
 
 // --- Load Image and Slice ---
 loadImageButton.addEventListener('click', () => {
     loadPuzzleImage('./cake-1850011_1920.jpg');
+    applyZoom();
 });
 
 zoomInButton.addEventListener('click', () => {
@@ -114,6 +115,7 @@ function addDragAndDropListeners(piece) {
 
     // --- Mouse Down: Start Dragging ---
     piece.addEventListener('mousedown', (e) => {
+        // console.log("mousedown", e.clientX, e.clientY);
         isDragging = true;
         piece.classList.add('dragging');
         piecesContainer.appendChild(piece); // Bring to front
@@ -136,11 +138,12 @@ function addDragAndDropListeners(piece) {
         const containerRect = puzzleContainer.getBoundingClientRect();
         const x = e.clientX - containerRect.left - offsetX;
         const y = e.clientY - containerRect.top - offsetY;
+        // console.log("mousemove", e.clientX, e.clientY, "containerRect", containerRect.left, containerRect.top, "offset", offsetX, offsetY, "new pos", x, y);
 
         // Update piece position
         piece.style.position = 'absolute';
-        piece.style.left = `${x}px`;
-        piece.style.top = `${y}px`;
+        piece.style.left = `${x/scaleFactor}px`;
+        piece.style.top = `${y/scaleFactor}px`;
     });
 
     // --- Mouse Up: Stop Dragging ---
