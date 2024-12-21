@@ -1,35 +1,59 @@
+const puzzleContainer = document.getElementById('puzzle-container');
 const puzzleBoard = document.getElementById('puzzle-board');
 const piecesContainer = document.getElementById('pieces-container');
 const mobileScrollBar = document.getElementById('mobile-scroll-bar');
 const loadImageButton = document.getElementById('load-image');
 const enableRotationCheckbox = document.getElementById('enable-rotation');
+const zoomInButton = document.getElementById('zoom-in');
+const zoomOutButton = document.getElementById('zoom-out');
 
 const ctx = puzzleBoard.getContext('2d');
 let image = new Image();
 let pieces = [];
 let rotationEnabled = false;
+let scaleFactor = 1;
 
 // --- Load Image and Slice ---
 loadImageButton.addEventListener('click', () => {
-    // const imgSrc = prompt('Enter the image URL:');
-    // if (imgSrc) {
-    //     loadPuzzleImage(imgSrc);
-    // }
     loadPuzzleImage('./cake-1850011_1920.jpg');
+});
+
+zoomInButton.addEventListener('click', () => {
+    scaleFactor *= 1.1;
+    initializePuzzle();
+});
+
+zoomOutButton.addEventListener('click', () => {
+    scaleFactor /= 1.1;
+    initializePuzzle();
 });
 
 function loadPuzzleImage(src) {
     image.src = src;
-    console.log("creating image")
+    console.log("creating image");
     image.onload = () => {
-        console.log("image loaded")
+        console.log("image loaded");
         initializePuzzle();
     };
 }
 
 function initializePuzzle() {
-    puzzleBoard.width = image.width;
-    puzzleBoard.height = image.height;
+    const boardWidth = puzzleBoard.clientWidth;
+    const boardHeight = puzzleBoard.clientHeight;
+    const imageWidth = image.width;
+    const imageHeight = image.height;
+
+    // Calculate scaling factor to fit the image within the puzzleBoard
+    const widthScale = boardWidth / imageWidth;
+    const heightScale = boardHeight / imageHeight;
+    const fitScale = Math.min(widthScale, heightScale) * scaleFactor;
+
+    const scaledWidth = imageWidth * fitScale;
+    const scaledHeight = imageHeight * fitScale;
+
+    console.log("image size: ", image.width, image.height);
+    console.log("puzzle board size: ", puzzleBoard.width, puzzleBoard.height);
+    console.log("scaled size: ", scaledWidth, scaledHeight);
 
     // Clear previous pieces
     pieces = [];
@@ -39,8 +63,8 @@ function initializePuzzle() {
     // Slice the image into pieces
     const rows = 4; // Define rows and cols dynamically later
     const cols = 4;
-    const pieceWidth = image.width / cols;
-    const pieceHeight = image.height / rows;
+    const pieceWidth = scaledWidth / cols;
+    const pieceHeight = scaledHeight / rows;
 
     for (let row = 0; row < rows; row++) {
         for (let col = 0; col < cols; col++) {
@@ -51,8 +75,8 @@ function initializePuzzle() {
             const pieceCtx = pieceCanvas.getContext('2d');
             pieceCtx.drawImage(
                 image,
-                col * pieceWidth, row * pieceHeight,
-                pieceWidth, pieceHeight,
+                col * (imageWidth / cols), row * (imageHeight / rows),
+                imageWidth / cols, imageHeight / rows,
                 0, 0,
                 pieceWidth, pieceHeight
             );
@@ -98,7 +122,7 @@ function addDragAndDropListeners(piece) {
         if (!isDragging) return;
 
         // Calculate new position
-        const containerRect = document.getElementById('puzzle-container').getBoundingClientRect();
+        const containerRect = puzzleContainer.getBoundingClientRect();
         const x = e.clientX - containerRect.left - offsetX;
         const y = e.clientY - containerRect.top - offsetY;
 
