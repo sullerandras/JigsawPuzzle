@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jigsaw Puzzle</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <h1>Jigsaw Puzzle Game</h1>
+        <button id="load-image">Load New Puzzle</button>
+        <label>
+            <input type="checkbox" id="enable-rotation"> Enable Rotation
+        </label>
+    </header>
+
+    <!-- Main Puzzle Board -->
+    <div id="puzzle-container">
+        <canvas id="puzzle-board"></canvas>
+        <div id="pieces-container"></div>
+    </div>
+
+    <!-- Mobile Bottom Scrollable Bar -->
+    <div id="mobile-scroll-bar" class="scrollable">
+        <!-- Puzzle pieces will be appended dynamically -->
+    </div>
+
+    <!-- JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>

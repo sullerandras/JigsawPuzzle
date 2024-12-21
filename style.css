@@ -1,0 +1,93 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Header */
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 90%;
+    margin: 10px 0;
+}
+
+button, label {
+    margin-left: 10px;
+}
+
+/* Puzzle Container */
+#puzzle-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    width: 90%;
+    height: 70%;
+    position: relative;
+}
+
+#puzzle-board {
+    border: 2px solid #333;
+    background-color: white;
+    width: 80%;
+    height: 100%;
+}
+
+/* Pieces Container for Desktop */
+#pieces-container {
+    width: 20%;
+    height: 100%;
+    overflow-y: auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+/* Scrollable Bar for Mobile */
+#mobile-scroll-bar {
+    display: none;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 100px;
+    background-color: white;
+    border-top: 2px solid #333;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.scrollable div {
+    display: inline-block;
+    margin: 5px;
+    width: 60px;
+    height: 60px;
+    background-color: #ccc;
+}
+
+/* Mobile Styles */
+@media screen and (max-width: 768px) {
+    #puzzle-container {
+        flex-direction: column;
+    }
+
+    #pieces-container {
+        display: none;
+    }
+
+    #mobile-scroll-bar {
+        display: block;
+    }
+}
