@@ -56,6 +56,18 @@ button, label {
     border: 1px solid #ddd;
 }
 
+/* Default style for puzzle pieces */
+.puzzle-piece {
+    cursor: grab; /* Default hand cursor */
+    transition: transform 0.2s ease; /* Smooth movement */
+}
+
+/* When dragging */
+.puzzle-piece.dragging {
+    cursor: grabbing; /* Grabbing hand cursor */
+    z-index: 1000; /* Bring the piece to the front */
+}
+
 /* Scrollable Bar for Mobile */
 #mobile-scroll-bar {
     display: none;

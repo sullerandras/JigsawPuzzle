@@ -61,7 +61,7 @@ function initializePuzzle() {
             pieceCanvas.style.position = 'absolute';
             pieceCanvas.style.left = `${Math.random() * 80}%`;
             pieceCanvas.style.top = `${Math.random() * 80}%`;
-            pieceCanvas.setAttribute('draggable', true);
+            pieceCanvas.setAttribute('draggable', false);
 
             // Add event listeners
             addDragAndDropListeners(pieceCanvas);
@@ -74,41 +74,47 @@ function initializePuzzle() {
 }
 
 function addDragAndDropListeners(piece) {
-    console.log("adding drag and drop listeners")
-    piece.addEventListener('dragstart', dragStart);
-    piece.addEventListener('dragend', dragEnd);
-    piece.addEventListener('drag', drag);
+    let isDragging = false;
+    let startX, startY;
+    let offsetX, offsetY;
 
-    let dragStartX, dragStartY, offsetX, offsetY;
+    // --- Mouse Down: Start Dragging ---
+    piece.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        piece.classList.add('dragging');
 
-    function dragStart(e) {
-        console.log('drag start', e.clientX, e.clientY, e.offsetX, e.offsetY)
-        dragStartX = e.clientX;
-        dragStartY = e.clientY;
-        offsetX = e.offsetX;
-        offsetY = e.offsetY;
-        e.dataTransfer.setData('text/plain', 'dragging');
-        e.target.classList.add('dragging');
-    }
+        // Get starting position
+        startX = e.clientX;
+        startY = e.clientY;
 
-    function drag(e) {
-        if (e.clientX === 0 && e.clientY === 0) return; // Ignore invalid drag events
+        // Get the offset within the piece
+        const rect = piece.getBoundingClientRect();
+        offsetX = e.clientX - rect.left;
+        offsetY = e.clientY - rect.top;
+    });
 
+    // --- Mouse Move: Dragging ---
+    document.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+
+        // Calculate new position
         const containerRect = document.getElementById('puzzle-container').getBoundingClientRect();
-    
         const x = e.clientX - containerRect.left - offsetX;
         const y = e.clientY - containerRect.top - offsetY;
-    
-        e.target.style.position = 'absolute';
-        e.target.style.left = `${x}px`;
-        e.target.style.top = `${y}px`;
-    }    
 
-    function dragEnd(e) {
-        console.log('drag end', e.clientX, e.clientY, e.offsetX, e.offsetY)
-        e.target.classList.remove('dragging');
-        // Snapping logic to be added here
-    }
+        // Update piece position
+        piece.style.position = 'absolute';
+        piece.style.left = `${x}px`;
+        piece.style.top = `${y}px`;
+    });
+
+    // --- Mouse Up: Stop Dragging ---
+    document.addEventListener('mouseup', (e) => {
+        if (isDragging) {
+            isDragging = false;
+            piece.classList.remove('dragging');
+        }
+    });
 }
 
 // --- Enable Rotation ---
