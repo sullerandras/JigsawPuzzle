@@ -177,10 +177,14 @@ class Dragger {
         this.isDragging = false;
         this.offsetX = 0;
         this.offsetY = 0;
+        this.dragStartedAt = null;
     }
 
     dragStart(clientX, clientY) {
         if (!this.piece.allowDragging) return;
+        if (this.isDragging) return;
+
+        this.dragStartedAt = Date.now(); // Clicking and releasing without moving picks up the piece, and can move without holding the mouse button
 
         // console.log("mousedown", e.target.col, e.target.row);
         this.isDragging = true;
@@ -216,6 +220,10 @@ class Dragger {
 
     dragEnd() {
         if (!this.isDragging) return;
+
+        if (Date.now() - this.dragStartedAt < 200) { // clicking on a piece counts as "picking up" even if the mouse moved a bit
+            return;
+        }
 
         this.isDragging = false;
         if (this.piece.group) {
