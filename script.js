@@ -265,12 +265,13 @@ function checkSnap(piece) {
         movePiece(piece, expectedX, expectedY);
         // console.log("snapped");
         piece.allowDragging = false;
-        piece.classList.add('unmovable');
         if (piece.group) {
             for (let p of groups[piece.group]) {
                 p.allowDragging = false;
                 p.classList.add('unmovable');
             }
+        } else {
+            piece.classList.add('unmovable');
         }
         
         return;
@@ -346,6 +347,11 @@ function groupPieces(piece1, piece2) {
         piece1.group = piece2.group = nextGroupID;
         groups[nextGroupID] = [piece1, piece2];
         nextGroupID++;
+    }
+
+    // bring all pieces in the group to the front
+    for (let piece of groups[piece1.group]) {
+        piecesContainer.appendChild(piece);
     }
 }
 
