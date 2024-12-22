@@ -59,6 +59,7 @@ button, label {
 .puzzle-piece {
     cursor: grab; /* Default hand cursor */
     transition: transform 0.2s ease; /* Smooth movement */
+    z-index: 1;
 }
 
 /* When dragging */
@@ -69,6 +70,7 @@ button, label {
 
 .puzzle-piece.unmovable {
     cursor: default; /* Default cursor */
+    z-index: 0; /* Send the piece to the back */
 }
 
 /* Scrollable Bar for Mobile */
