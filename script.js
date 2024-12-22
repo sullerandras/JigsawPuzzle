@@ -143,8 +143,15 @@ function addDragAndDropListeners(piece) {
 
         // console.log("mousedown", e.target.col, e.target.row);
         isDragging = true;
-        piece.classList.add('dragging');
-        piecesContainer.appendChild(piece); // Bring to front
+        if (piece.group) {
+            for (let p of groups[piece.group]) {
+                p.classList.add('dragging');
+                piecesContainer.appendChild(p); // Bring to front
+            }
+        } else {
+            piece.classList.add('dragging');
+            piecesContainer.appendChild(piece); // Bring to front
+        }
 
         // Get starting position
         startX = e.clientX;
@@ -175,7 +182,13 @@ function addDragAndDropListeners(piece) {
     document.addEventListener('mouseup', (e) => {
         if (isDragging) {
             isDragging = false;
-            piece.classList.remove('dragging');
+            if (piece.group) {
+                for (let p of groups[piece.group]) {
+                    p.classList.remove('dragging');
+                }
+            } else {
+                piece.classList.remove('dragging');
+            }
             checkSnap(e.target);
         }
     });
