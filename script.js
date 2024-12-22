@@ -259,6 +259,7 @@ function checkSnap(piece) {
 
 function groupPieces(piece1, piece2) {
     if (piece1.group && piece2.group && piece1.group != piece2.group) { // Merge the two groups
+        const piece2group = piece2.group; // store the group id before it gets overwritten in the loop
         const group1 = groups[piece1.group]; 
         const group2 = groups[piece2.group];
         for (let piece of group2) {
@@ -267,7 +268,7 @@ function groupPieces(piece1, piece2) {
                 group1.push(piece);
             }
         }
-        delete groups[piece2.group];
+        delete groups[piece2group];
     } else if (piece1.group) { // Add piece2 to group of piece1
         piece2.group = piece1.group;
         if (!groups[piece1.group].includes(piece2)) {
