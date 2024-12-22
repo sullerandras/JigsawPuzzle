@@ -263,7 +263,7 @@ function checkSnap(piece) {
     // console.log("checkSnap", piece.col, piece.row, x, y, expectedX, expectedY, distanceX, distanceY);
     if (distanceX < pieceWidth * 0.15 && distanceY < pieceHeight * 0.15) {
         movePiece(piece, expectedX, expectedY);
-        console.log("snapped");
+        // console.log("snapped");
         piece.allowDragging = false;
         piece.classList.add('unmovable');
         if (piece.group) {
@@ -290,7 +290,7 @@ function checkSnap(piece) {
         const isVerticallyAdjacent = distanceY > 0.85 * pieceHeight && distanceY < 1.15 * pieceHeight && distanceX < 0.15 * pieceWidth;
         // move the `other` piece to be aligned with the current `piece` if adjacent
         if (isHorizontallyAdjacent) {
-            console.log('horizontally adjacent', piece.group, other.group);
+            // console.log('horizontally adjacent', piece.group, other.group);
             if (x < otherX) {
                 if (piece.col == other.col - 1 && piece.row == other.row) {
                     movePiece(other, x + pieceWidth, y);
@@ -304,7 +304,7 @@ function checkSnap(piece) {
             }
         }
         if (isVerticallyAdjacent) {
-            console.log('vertically adjacent', piece.group, other.group);
+            // console.log('vertically adjacent', piece.group, other.group);
             if (y < otherY) {
                 if (piece.row == other.row - 1 && piece.col == other.col) {
                     movePiece(other, x, y + pieceHeight);
