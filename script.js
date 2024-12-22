@@ -233,7 +233,14 @@ class Dragger {
         } else {
             this.piece.classList.remove('dragging');
         }
-        checkSnap(this.piece);
+
+        if (this.piece.group) {
+            for (let p of groups[this.piece.group]) {
+                checkSnap(p);
+            }
+        } else {
+            checkSnap(this.piece);
+        }
     }
 }
 
