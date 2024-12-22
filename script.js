@@ -380,6 +380,8 @@ function groupPieces(piece1, piece2) {
 }
 
 function movePiece(piece, x, y) {
+    x = Math.round(x);
+    y = Math.round(y);
     let dx = x - piece.x;
     let dy = y - piece.y;
     if (piece.group) {
