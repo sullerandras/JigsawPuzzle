@@ -122,76 +122,111 @@ function initializePuzzle() {
             // pieceCanvas.style.top = `${row * pieceHeight}px`;
             pieceCanvas.setAttribute('draggable', false);
 
-            // Add event listeners
-            addDragAndDropListeners(pieceCanvas);
-
+            
             pieces.push(pieceCanvas);
             piecesContainer.appendChild(pieceCanvas);
             mobileScrollBar.appendChild(pieceCanvas.cloneNode(true)); // For mobile
         }
     }
+    
+    // Add event listeners
+    addDragAndDropListeners(pieces);
 }
 
-function addDragAndDropListeners(piece) {
-    let isDragging = false;
-    let startX, startY;
-    let offsetX, offsetY;
+function addDragAndDropListeners(pieces) {
+    let hoveredDragger = null;
+    let hoveredClientX = null;
+    let hoveredClientY = null;
 
-    // --- Mouse Down: Start Dragging ---
-    piece.addEventListener('mousedown', (e) => {
-        if (!piece.allowDragging) return;
+    document.addEventListener('keydown', (e) => {
+        // console.log("keydown", e.key);
+        if (hoveredDragger && hoveredClientX && hoveredClientY) {
+            hoveredDragger.dragStart(hoveredClientX, hoveredClientY);
+        }
+    });
+    document.addEventListener('keyup', (e) => {
+        // console.log("keyup", e.key);
+        if (hoveredDragger && hoveredClientX && hoveredClientY) {
+            hoveredDragger.dragEnd(hoveredClientX, hoveredClientY);
+        }
+    });
+
+    for (let piece of pieces) {
+        const dragger = new Dragger(piece);
+
+        // --- Mouse Down: Start Dragging ---
+        piece.addEventListener('mousedown', (e) => dragger.dragStart(e.clientX, e.clientY));
+        piece.addEventListener('mouseenter', (e) => hoveredDragger = dragger);
+        piece.addEventListener('mouseleave', (e) => hoveredDragger = null);
+
+        // --- Mouse Move: Dragging ---
+        document.addEventListener('mousemove', (e) => {
+            hoveredClientX = e.clientX;
+            hoveredClientY = e.clientY;
+            dragger.dragging(e.clientX, e.clientY);
+        });    
+
+        // --- Mouse Up: Stop Dragging ---
+        document.addEventListener('mouseup', (e) => dragger.dragEnd());
+    }
+}
+
+class Dragger {
+    constructor(piece) {
+        this.piece = piece;
+        this.isDragging = false;
+        this.offsetX = 0;
+        this.offsetY = 0;
+    }
+
+    dragStart(clientX, clientY) {
+        if (!this.piece.allowDragging) return;
 
         // console.log("mousedown", e.target.col, e.target.row);
-        isDragging = true;
-        if (piece.group) {
-            for (let p of groups[piece.group]) {
+        this.isDragging = true;
+        if (this.piece.group) {
+            for (let p of groups[this.piece.group]) {
                 p.classList.add('dragging');
                 piecesContainer.appendChild(p); // Bring to front
             }
         } else {
-            piece.classList.add('dragging');
-            piecesContainer.appendChild(piece); // Bring to front
+            this.piece.classList.add('dragging');
+            piecesContainer.appendChild(this.piece); // Bring to front
         }
 
-        // Get starting position
-        startX = e.clientX;
-        startY = e.clientY;
-
         // Get the offset within the piece
-        const rect = piece.getBoundingClientRect();
-        offsetX = e.clientX - rect.left;
-        offsetY = e.clientY - rect.top;
-    });
+        const rect = this.piece.getBoundingClientRect();
+        this.offsetX = clientX - rect.left;
+        this.offsetY = clientY - rect.top;
+    }
 
-    // --- Mouse Move: Dragging ---
-    document.addEventListener('mousemove', (e) => {
-        if (!isDragging) return;
+    dragging(clientX, clientY) {
+        if (!this.isDragging) return;
 
         // Calculate new position
         const containerRect = puzzleContainer.getBoundingClientRect();
-        const x = e.clientX - containerRect.left - offsetX;
-        const y = e.clientY - containerRect.top - offsetY;
-        // console.log("mousemove", e.clientX, e.clientY, "containerRect", containerRect.left, containerRect.top, "offset", offsetX, offsetY, "new pos", x, y);
+        const x = clientX - containerRect.left - this.offsetX;
+        const y = clientY - containerRect.top - this.offsetY;
+        // console.log("mousemove", clientX, clientY, "containerRect", containerRect.left, containerRect.top, "offset", this.offsetX, this.offsetY, "new pos", x, y);
 
         // Update piece position
-        piece.style.position = 'absolute';
-        movePiece(piece, x/scaleFactor, y/scaleFactor);
-    });
+        this.piece.style.position = 'absolute';
+        movePiece(this.piece, x/scaleFactor, y/scaleFactor);
+    }
 
-    // --- Mouse Up: Stop Dragging ---
-    document.addEventListener('mouseup', (e) => {
-        if (isDragging) {
-            isDragging = false;
-            if (piece.group) {
-                for (let p of groups[piece.group]) {
-                    p.classList.remove('dragging');
-                }
-            } else {
-                piece.classList.remove('dragging');
+    dragEnd() {
+        if (!this.isDragging) return;
+
+        this.isDragging = false;
+        if (this.piece.group) {
+            for (let p of groups[this.piece.group]) {
+                p.classList.remove('dragging');
             }
-            checkSnap(e.target);
+        } else {
+            this.piece.classList.remove('dragging');
         }
-    });
+        checkSnap(this.piece);
+    }
 }
 
 // --- Enable Rotation ---
