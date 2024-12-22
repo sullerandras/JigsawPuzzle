@@ -18,6 +18,24 @@ let nextGroupID = 1;
 let rotationEnabled = false;
 let scaleFactor = 0.7;
 let pieceWidth, pieceHeight;
+let puzzleStartedAt = null; // puzzle starts when the first piece is moved
+let puzzleEndedAt = null;
+let solvedPieces = 0; // how many pieces are in the correct position
+
+window.setInterval(() => {
+    if (puzzleStartedAt) {
+        const endTime = puzzleEndedAt || Date.now();
+        const elapsed = endTime - puzzleStartedAt;
+        const minutes = Math.floor(elapsed / 60000);
+        const seconds = Math.floor((elapsed % 60000) / 1000);
+        document.getElementById('timer').textContent = `Time: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+        if (puzzleEndedAt == null && solvedPieces == pieces.length) {
+            puzzleEndedAt = Date.now();
+            alert("Congratulations! You solved the puzzle!");
+        }
+    }
+}, 100);
 
 // --- Load Image and Slice ---
 loadImageButton.addEventListener('click', () => {
@@ -50,6 +68,10 @@ function loadPuzzleImage(src) {
 }
 
 function initializePuzzle() {
+    puzzleStartedAt = null;
+    puzzleEndedAt = null;
+    solvedPieces = 0;
+
     const boardWidth = puzzleBoard.clientWidth;
     const boardHeight = puzzleBoard.clientHeight;
     const imageWidth = image.width;
@@ -76,8 +98,8 @@ function initializePuzzle() {
     mobileScrollBar.innerHTML = '';
 
     // Slice the image into pieces
-    const rows = 4; // Define rows and cols dynamically later
-    const cols = 4;
+    const cols = 4; // Define rows and cols dynamically later
+    const rows = 4; 
     pieceWidth = Math.floor(scaledWidth / cols);
     pieceHeight = Math.floor(scaledHeight / rows);
 
@@ -184,6 +206,10 @@ class Dragger {
         if (!this.piece.allowDragging) return;
         if (this.isDragging) return;
 
+        if (!puzzleStartedAt) { // Start the timer when the first piece is moved
+            puzzleStartedAt = Date.now();
+        }
+
         this.dragStartedAt = Date.now(); // Clicking and releasing without moving picks up the piece, and can move without holding the mouse button
 
         // console.log("mousedown", e.target.col, e.target.row);
@@ -264,14 +290,12 @@ function checkSnap(piece) {
     if (distanceX < pieceWidth * 0.15 && distanceY < pieceHeight * 0.15) {
         movePiece(piece, expectedX, expectedY);
         // console.log("snapped");
-        piece.allowDragging = false;
         if (piece.group) {
             for (let p of groups[piece.group]) {
-                p.allowDragging = false;
-                p.classList.add('unmovable');
+                solvePiece(p);
             }
         } else {
-            piece.classList.add('unmovable');
+            solvePiece(piece);
         }
         
         return;
@@ -372,4 +396,13 @@ function movePiece(piece, x, y) {
         piece.y = y;
     }
     // console.log('movePiece', piece.col, piece.row, "to", x, y, "but got", piece.style.left, piece.style.top, "group", piece.group);
+}
+
+// Marks piece as solved and prevents further dragging
+function solvePiece(piece) {
+    if (piece.allowDragging) {
+        piece.allowDragging = false;
+        piece.classList.add('unmovable');
+        solvedPieces++;
+    }
 }
