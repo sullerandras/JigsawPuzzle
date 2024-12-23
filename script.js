@@ -99,7 +99,7 @@ function initializePuzzle() {
 
     // Slice the image into pieces
     const cols = 4; // Define rows and cols dynamically later
-    const rows = 4; 
+    const rows = 4;
     pieceWidth = Math.floor(scaledWidth / cols);
     pieceHeight = Math.floor(scaledHeight / rows);
 
@@ -132,7 +132,7 @@ function initializePuzzle() {
             pieceCanvas.classList.add('puzzle-piece');
             pieceCanvas.style.position = 'absolute';
             let randomX, randomY;
-            while (true) { 
+            while (true) {
                 randomX = Math.random() * (scaledWidth / scaleFactor - pieceWidth);
                 randomY = Math.random() * (scaledHeight / scaleFactor - pieceHeight);
                 if (randomX > scaledWidth || randomY > scaledHeight) {
@@ -144,13 +144,13 @@ function initializePuzzle() {
             // pieceCanvas.style.top = `${row * pieceHeight}px`;
             pieceCanvas.setAttribute('draggable', false);
 
-            
+
             pieces.push(pieceCanvas);
             piecesContainer.appendChild(pieceCanvas);
             mobileScrollBar.appendChild(pieceCanvas.cloneNode(true)); // For mobile
         }
     }
-    
+
     // Add event listeners
     addDragAndDropListeners(pieces);
 }
@@ -186,7 +186,7 @@ function addDragAndDropListeners(pieces) {
             hoveredClientX = e.clientX;
             hoveredClientY = e.clientY;
             dragger.dragging(e.clientX, e.clientY);
-        });    
+        });
 
         // --- Mouse Up: Stop Dragging ---
         document.addEventListener('mouseup', (e) => dragger.dragEnd());
@@ -297,7 +297,7 @@ function checkSnap(piece) {
         } else {
             solvePiece(piece);
         }
-        
+
         return;
     }
 
@@ -335,7 +335,7 @@ function checkSnap(piece) {
                     movePiece(other, x, y + pieceHeight);
                     groupPieces(piece, other);
                 }
-            } else {    
+            } else {
                 if (piece.row - 1 == other.row && piece.col == other.col) {
                     movePiece(other, x, y - pieceHeight);
                     groupPieces(piece, other);
@@ -348,7 +348,7 @@ function checkSnap(piece) {
 function groupPieces(piece1, piece2) {
     if (piece1.group && piece2.group && piece1.group != piece2.group) { // Merge the two groups
         const piece2group = piece2.group; // store the group id before it gets overwritten in the loop
-        const group1 = groups[piece1.group]; 
+        const group1 = groups[piece1.group];
         const group2 = groups[piece2.group];
         for (let piece of group2) {
             piece.group = piece1.group;
