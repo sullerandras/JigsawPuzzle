@@ -6,6 +6,7 @@ const loadImageButton = document.getElementById('load-image');
 const enableRotationCheckbox = document.getElementById('enable-rotation');
 const zoomInButton = document.getElementById('zoom-in');
 const zoomOutButton = document.getElementById('zoom-out');
+const customStyle = document.getElementById('custom-style');
 
 const ctx = puzzleBoard.getContext('2d');
 let image = new Image();
@@ -153,6 +154,25 @@ function initializePuzzle() {
 
     // Add event listeners
     addDragAndDropListeners(pieces);
+
+    let dataURL = imageToDataURL(image);
+    customStyle.innerHTML = `
+    #puzzle-board.preview {
+        background-image: url('${dataURL}');
+        background-size: contain;
+        background-color: rgba(255,255,255,0.6);
+        background-blend-mode: lighten;
+    }
+    `;
+}
+
+function imageToDataURL(image) {
+    const canvas = document.createElement('canvas');
+    canvas.width = image.width;
+    canvas.height = image.height;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(image, 0, 0);
+    return canvas.toDataURL();
 }
 
 function addDragAndDropListeners(pieces) {
@@ -162,6 +182,10 @@ function addDragAndDropListeners(pieces) {
 
     document.addEventListener('keydown', (e) => {
         // console.log("keydown", e.key);
+        if (e.key === 'g') {
+            puzzleBoard.classList.toggle('preview');
+        }
+
         if (hoveredDragger && hoveredClientX && hoveredClientY) {
             hoveredDragger.dragStart(hoveredClientX, hoveredClientY);
         }
