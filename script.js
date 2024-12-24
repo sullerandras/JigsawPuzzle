@@ -184,6 +184,7 @@ function addDragAndDropListeners(pieces) {
         // console.log("keydown", e.key);
         if (e.key === 'g') {
             puzzleBoard.classList.toggle('preview');
+            return;
         }
 
         if (hoveredDragger && hoveredClientX && hoveredClientY) {
@@ -191,6 +192,10 @@ function addDragAndDropListeners(pieces) {
         }
     });
     document.addEventListener('keyup', (e) => {
+        if (e.key === 'g') {
+            return;
+        }
+
         // console.log("keyup", e.key);
         if (hoveredDragger && hoveredClientX && hoveredClientY) {
             hoveredDragger.dragEnd(hoveredClientX, hoveredClientY);
